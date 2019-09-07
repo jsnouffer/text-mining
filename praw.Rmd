@@ -1,0 +1,62 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.2.3
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+import praw
+
+reddit = praw.Reddit(client_id='Cz8OU1vxajnWDw',
+                     client_secret='5qax29ZPI2_Rdjc1TsXXEypFduk',
+                     redirect_uri='http://localhost:8080',
+                     user_agent='my user agent')
+
+print(reddit.auth.url(['identity'], '...', 'permanent'))
+
+print(reddit.read_only)
+
+#print(reddit.auth.authorize(code))
+print(reddit.user.me())
+```
+
+```{python}
+# assume you have a Reddit instance bound to variable `reddit`
+subreddit = reddit.subreddit('minecraft')
+
+print(subreddit.display_name)  # Output: redditdev
+print(subreddit.title)         # Output: reddit Development
+print(subreddit.description)   # Output: A subreddit for discussion of ...
+
+for submission in subreddit.hot(limit=10):
+    print(submission.title)  # Output: the submission's title
+    print(submission.score)  # Output: the submission's score
+    print(submission.id)     # Output: the submission's ID
+    print(submission.url)    # Output: the URL the submission points to
+                             # or the submission's URL if it's a self post
+```
+
+```{python}
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+user = reddit.redditor('Droacon')
+
+object = user
+object_methods = [method_name for method_name in dir(object)
+                  if callable(getattr(object, method_name))]
+
+for comment in user.comments.new():
+    #pp.pprint(dir(comment))
+    print(comment.subreddit)
+
+
+#pp.pprint(dir(user.parse))
+```
