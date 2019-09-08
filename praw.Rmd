@@ -47,15 +47,16 @@ for submission in subreddit.hot(limit=10):
 ```{python}
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(reddit.subreddits.popular().__sizeof__())
 user = reddit.redditor('Droacon')
 
 object = user
 object_methods = [method_name for method_name in dir(object)
                   if callable(getattr(object, method_name))]
 
-for comment in user.comments.new():
+for comment in reddit.subreddits.popular():
     #pp.pprint(dir(comment))
-    print(comment.subreddit)
+    print(comment)
 
 
 #pp.pprint(dir(user.parse))
