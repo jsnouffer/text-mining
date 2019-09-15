@@ -1,18 +1,9 @@
----
-jupyter:
-  jupytext:
-    text_representation:
-      extension: .Rmd
-      format_name: rmarkdown
-      format_version: '1.1'
-      jupytext_version: 1.2.3
-  kernelspec:
-    display_name: Python 3
-    language: python
-    name: python3
----
+#!/usr/bin/env python
+# coding: utf-8
 
-```{python}
+# In[32]:
+
+
 import praw
 from elasticsearch import Elasticsearch
 
@@ -20,11 +11,13 @@ from elasticsearch import helpers
 scan = helpers.scan
 
 from datetime import datetime
-```
 
-## Setup Reddit API and ElasticSearch Connection
 
-```{python}
+# ## Setup Reddit API and ElasticSearch Connection
+
+# In[2]:
+
+
 reddit = praw.Reddit(client_id='Cz8OU1vxajnWDw',
                      client_secret='5qax29ZPI2_Rdjc1TsXXEypFduk',
                      redirect_uri='http://localhost:8080',
@@ -34,11 +27,13 @@ print(reddit.auth.url(['identity'], '...', 'permanent'))
 
 es = Elasticsearch([{'host':'localhost','port':9200}])
 es
-```
 
-## Grab popular subreddits from API
 
-```{python}
+# ## Grab popular subreddits from API
+
+# In[19]:
+
+
 # Grab popular subreddits
 count = 0
 for subreddit in reddit.subreddits.popular():
@@ -57,9 +52,10 @@ for subreddit in reddit.subreddits.popular():
     es.index(index = 'subreddits.popular', id = subreddit.display_name, body = doc)
 print(count)
 
-```
 
-```{python}
+# In[107]:
+
+
 redditors = 'redditors'
 
 try:
@@ -72,11 +68,9 @@ results = scan(es,
     index = 'subreddits.popular'
 )
 
-count = 0
 for doc in results:
     subreddit = reddit.subreddit(doc['_id'])
     for comment in subreddit.comments(limit = 1000):
-        count += 1
         doc = {}
         
         author = comment.author
@@ -110,7 +104,6 @@ for doc in results:
             if trophy.name not in doc['trophies']:
                 doc['trophies'].append(trophy.name)
     
-        print(count)
-    
+    print(count)
+    break
 
-```
