@@ -1,0 +1,99 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.2.3
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+import pandas as pd
+import ast
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+FILE = '/home/jason/grid_search.out'
+
+with open(FILE) as f:
+   df = pd.DataFrame([ast.literal_eval(row.value) for row in ast.parse(f.read()).body])
+df
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['gamma'], label="Gamma")
+plt.legend(loc='upper left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['polynomial_degree'], label="polynomial_degree")
+#plt.legend(loc='upper left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['decision_function_shape'], label="decision_function_shape")
+plt.legend(loc='center left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['C'], label="C")
+plt.legend(loc='center left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['kernel'], label="kernel")
+plt.legend(loc='center left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['polynomial_coef0'], label="polynomial_coef0")
+plt.legend(loc='center left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['tol'], label="tol")
+plt.legend(loc='upper left')
+plt.show()
+```
+
+```{python}
+# %matplotlib inline
+matplotlib.style.use('ggplot')
+
+plt.scatter(df['score'], df['class_weight'], label="class_weight")
+plt.legend(loc='upper left')
+plt.show()
+```

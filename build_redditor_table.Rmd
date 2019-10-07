@@ -58,6 +58,8 @@ for subreddit in reddit.subreddits.popular():
 print(count)
 ```
 
+## Grab up-to 1000 comments for each subreddit
+
 ```{python}
 redditors = 'redditors'
 
@@ -65,10 +67,6 @@ try:
     es.indices.create(index = redditors)
 except:
     pass
-
-#es.indices.clear_cache(index = 'subreddits.popular', fielddata = True, query = True, request = True)
-#es.indices.refresh(index = 'subreddits.popular')
-#es.cluster.health(wait_for_no_relocating_shards=True, wait_for_active_shards='all')
 
 results = scan(es,         
     query = {
