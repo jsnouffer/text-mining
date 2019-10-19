@@ -40,8 +40,8 @@ tqdm.pandas()
 ```
 
 ```{python}
-train = pd.read_json('/home/jason/tm_week5/train.json')
-test = pd.read_json('/home/jason/tm_week5/test.json')
+train = pd.read_json('/home/jason/tm_week5/trainfile2.json')
+test = pd.read_json('testfile2a.json')
 train
 ```
 
@@ -144,4 +144,11 @@ def report2dict(cr):
     return classes
 report = classification_report(y_true, y_pred)
 pd.DataFrame(report2dict(report)).T
+```
+
+```{python}
+y_pred = label_encoder.inverse_transform(classifier.predict(x_test))
+test['cuisine'] = y_pred
+test[['id', 'cuisine']].to_csv('submission.csv', index=False)
+test[['id', 'cuisine']].head()
 ```
