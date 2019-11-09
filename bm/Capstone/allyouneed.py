@@ -17,7 +17,7 @@ from imblearn.under_sampling import RandomUnderSampler
 import nltk
 from nltk.tokenize import word_tokenize
 
-mbti = pd.read_pickle('mbti_ver2.pickle')
+mbti = pd.read_pickle('/mnt/volume_nyc3_01/models/mbti_ver2.pickle')
 mbti_n = mbti.drop(['type','image','video_link','video_title',
                     'otherlink','emoticons','hashtag','mbti_ref','mbti_ref_most','ennea','tagged_words',
                    'tagged_words', 'is_E','is_S','is_T','is_J'], axis=1)
