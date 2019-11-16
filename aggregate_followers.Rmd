@@ -35,8 +35,7 @@ es
 ```
 
 ```{python}
-src_results = es.search(scroll='360m',      
-    body =
+src_results = es.search(scroll='360m', body =
     {
       "query": {
         "function_score": {
@@ -68,7 +67,7 @@ src_results = es.search(scroll='360m',
           "boost_mode": "replace"
         }
       }
-    }, index = 'redditors', size = 2000)
+    }, index = 'redditors', size = 1000)
 
 for src_doc in src_results['hits']['hits']:
     redditor = reddit.redditor(src_doc['_id'])

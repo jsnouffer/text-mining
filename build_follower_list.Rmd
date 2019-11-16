@@ -14,14 +14,12 @@ jupyter:
 
 ```{python}
 from elasticsearch import Elasticsearch
-
-from elasticsearch import helpers
-scan = helpers.scan
+import random
 
 es = Elasticsearch([{'host':'localhost','port':9200}])
 es
 
-indx = 'redditors.followers'
+indx = 'redditors.followers.sample'
 
 try:
     es.indices.create(index = indx)
@@ -30,25 +28,54 @@ except:
 ```
 
 ```{python}
-results = scan(es,         
-    query = {
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "exists": {
-                            "field": "commenters"
-                        }
+results = es.search(scroll='360m', body =       
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "bool": {
+                "must_not": [
+                  {
+                    "exists": {
+                      "field": "commenters_sampled"
                     }
+                  }
                 ]
+              }
+            },
+            {
+              "exists": {
+                "field": "commenters"
+              }
+            }
+          ]
+        }
+      },
+      "random_score": {
+        "seed": random.randint(1, 1000)
+      },
+      "boost_mode": "replace"
+    }
+  }
+}, index = 'redditors', size = 10000)
+```
+
+```{python}
+for result in results['hits']['hits']:
+    commenters = result['_source']['commenters']
+    if len(commenters) >= 100 and len(commenters) <= 160:
+        for commenter in commenters:
+            doc = {}
+            doc['name'] = commenter
+            es.index(index = indx, id = commenter, body = doc)
+
+        update = {
+            "doc": {
+                  "commenters_sampled": True
             }
         }
-    }, index = 'redditors')
-
-for result in results:
-    commenters = result['_source']['commenters']
-    for commenter in commenters:
-        doc = {}
-        doc['name'] = commenter
-        es.index(index = indx, id = commenter, body = doc)
+        es.update(index = 'redditors', id = result['_id'], body = update)
 ```
