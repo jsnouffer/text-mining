@@ -40,6 +40,10 @@ tqdm.pandas()
 ```
 
 ```{python}
+
+```
+
+```{python}
 train = pd.read_json('/home/jason/tm_week5/trainfile2.json')
 test = pd.read_json('testfile2a.json')
 train

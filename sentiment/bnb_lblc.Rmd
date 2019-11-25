@@ -1,0 +1,75 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.2.3
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+import re
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import ParameterGrid
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.metrics import accuracy_score
+```
+
+```{python}
+df = pd.read_csv('/home/jason/sentiment_data/clean.txt', sep='&&&', header=None, names=['id','sentiment','text'],
+                engine='python', index_col=0)
+```
+
+```{python}
+SAMPLE_PERCENTAGE: float = 0.1
+RANDOM_SAMPLE_SEED: int = 42
+
+param_template = {
+    'alpha': np.arange(0.1, 10.0, 0.5),
+    'fit_prior': [True, False]
+}
+
+parameter_grid = ParameterGrid(param_template)
+len(parameter_grid)
+```
+
+```{python}
+def preprocess(text):
+    # remove links and special characters
+    return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", text).split())
+```
+
+```{python}
+for parameters in parameter_grid:
+    df_sample = df.sample(frac=SAMPLE_PERCENTAGE, random_state=RANDOM_SAMPLE_SEED)
+    df_sample['text_processed'] = df_sample['text'].apply(preprocess)
+    
+#     cv = CountVectorizer(binary=True, stop_words='english')
+#     cv.fit(df_sample['text_processed'])
+#     X = cv.transform(df_sample['text_processed'])
+    
+    tfidf = TfidfVectorizer(ngram_range=[1,3],
+                           stop_words='english')
+    tfidf.fit(df_sample['text_processed'])
+    X = tfidf.transform(df_sample['text_processed'])
+
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, df_sample['sentiment'], train_size = 0.8
+    )
+    
+    nb = BernoulliNB(alpha=parameters['alpha'],
+                    fit_prior=parameters['fit_prior'])
+                            
+    nb.fit(X_train, y_train)
+    parameters['score'] = str(accuracy_score(y_val, nb.predict(X_val)))
+    print (str(parameters))
+    
+```
